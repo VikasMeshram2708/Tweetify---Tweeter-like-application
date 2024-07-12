@@ -89,8 +89,38 @@ function TweetStateInner({ children }: { children: ReactNode }) {
     },
   });
 
+  // Update Tweet Mutation
+
+  // Confirm Edit Mutation
+  const confirmMutation = useMutation({
+    mutationFn: async ({
+      tweetId,
+      content,
+    }: {
+      tweetId: string;
+      content: string;
+    }) => {
+      const res = await fetch("/api/updatetweet", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tweetId: tweetId,
+          content: content,
+        }),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tweets"] });
+    },
+  });
+
   return (
-    <TweetContext.Provider value={{ tweets, isLoading, likeMutation,createTweet }}>
+    <TweetContext.Provider
+      value={{ tweets, isLoading, likeMutation, createTweet, confirmMutation }}
+    >
       {children}
     </TweetContext.Provider>
   );

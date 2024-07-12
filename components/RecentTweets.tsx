@@ -7,8 +7,11 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { Heart, Trash2 } from "lucide-react";
+import { Heart, Pencil, Trash2 } from "lucide-react";
+import { ChangeEvent, useState } from "react";
+import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useMutation } from "@tanstack/react-query";
 
 interface Params {
   tweetId: string;
@@ -26,8 +29,17 @@ export default function RecentTweets({
   liked,
   createdAt,
 }: Params) {
-  const { likeMutation } = useTweets();
+  const { likeMutation, tweets, confirmMutation } = useTweets();
+  const [newTweet, setNewTweet] = useState("");
+
   const { user } = useUser();
+  const [toggleEdit, setToggleEdit] = useState(false);
+
+  const filterTweet = (tweetId: string) => {
+    const filteredTweet = tweets?.filter((item) => item?.tweetId === tweetId);
+    console.log(filteredTweet[0].authorContent);
+    setNewTweet(filteredTweet[0].authorContent);
+  };
 
   return (
     <Card className="border-none bg-slate-600 text-slate-100">
@@ -41,18 +53,61 @@ export default function RecentTweets({
         </Avatar>
         <div>
           <h3 className="font-semibold text-slate-100">{author}</h3>
-          <p className="text-sm text-slate-300">@vikasmeshram</p>
+          <p className="text-sm text-slate-300">@{authorEmail.split("@")[0]}</p>
         </div>
       </CardHeader>
       <CardContent>
+        {toggleEdit && (
+          <>
+            <Input
+              value={newTweet}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setNewTweet(e?.target?.value)
+              }
+              className="text-black"
+              type="text"
+            />
+            <Button
+              onClick={() => {
+                confirmMutation.mutate({
+                  tweetId: tweetId,
+                  content: newTweet,
+                });
+                setToggleEdit(false);
+              }}
+              variant={"destructive"}
+              className="mt-3"
+            >
+              Confirm
+            </Button>
+            <Button
+              onClick={() => setToggleEdit(false)}
+              variant={"destructive"}
+              className="mt-3 ml-3"
+            >
+              Cancel
+            </Button>
+          </>
+        )}
         <p className="text-slate-200">{authorContent}</p>
       </CardContent>
       <CardFooter className="flex justify-between">
         <p className="text-sm sm:text-lg text-slate-300">
-          {new Date().toLocaleDateString()}
+          {new Date(createdAt).toLocaleDateString()}
         </p>
         <div className="flex gap-4 items-center">
-          {user?.email === authorEmail && <Trash2 className="cursor-pointer hover:text-red-500" />}
+          {user?.email === authorEmail && (
+            <>
+              <Trash2 className="cursor-pointer hover:text-red-500" />
+              <Pencil
+                onClick={() => {
+                  setToggleEdit((prev) => !prev);
+                  filterTweet(tweetId);
+                }}
+                className="cursor-pointer hover:text-red-500"
+              />
+            </>
+          )}
           {liked ? (
             <Heart
               onClick={() => likeMutation.mutate({ tweetId, isLiked: false })}

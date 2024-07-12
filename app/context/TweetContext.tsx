@@ -14,5 +14,9 @@ export interface TweetContextType {
     unknown
   >;
   createTweet: UseMutationResult<any, Error, string, unknown>;
+  confirmMutation: UseMutationResult<void, Error, {
+    tweetId: string;
+    content: string;
+}, unknown>
 }
 export const TweetContext = createContext<TweetContextType | null>(null);
