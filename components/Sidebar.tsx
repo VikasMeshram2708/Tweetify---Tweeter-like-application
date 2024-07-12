@@ -63,7 +63,7 @@ export default function Sidebar() {
     <nav
       className={`min-h-screen bg-slate-800 text-slate-100 ${
         isDesktop ? "p-4" : "p-2"
-      } flex flex-col ${isDesktop ? "w-56" : "w-14"}`}
+      } flex flex-col ${isDesktop ? "w-96" : "w-14"}`}
     >
       <div className="mb-5 flex items-center justify-between">
         {isDesktop ? (
