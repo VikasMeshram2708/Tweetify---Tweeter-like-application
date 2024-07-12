@@ -29,7 +29,9 @@ export default function RecentTweets({
   liked,
   createdAt,
 }: Params) {
-  const { likeMutation, tweets, confirmMutation } = useTweets();
+  // Custom Hook
+  const { likeMutation, tweets, confirmMutation, deleteMutation } = useTweets();
+
   const [newTweet, setNewTweet] = useState("");
 
   const { user } = useUser();
@@ -98,7 +100,10 @@ export default function RecentTweets({
         <div className="flex gap-4 items-center">
           {user?.email === authorEmail && (
             <>
-              <Trash2 className="cursor-pointer hover:text-red-500" />
+              <Trash2
+                onClick={() => deleteMutation.mutate(tweetId)}
+                className="cursor-pointer hover:text-red-500"
+              />
               <Pencil
                 onClick={() => {
                   setToggleEdit((prev) => !prev);

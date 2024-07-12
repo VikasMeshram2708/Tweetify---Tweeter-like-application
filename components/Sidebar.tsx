@@ -45,19 +45,19 @@ const links: iLinks[] = [
     title: "My Tweets",
   },
   {
-    id: 2,
+    id: 3,
     title: "About Us",
     redirectUrl: "/about",
     icon: <Store />,
   },
   {
-    id: 3,
+    id: 4,
     title: "Contact Us",
     redirectUrl: "/contact",
     icon: <BookUser />,
   },
   {
-    id: 4,
+    id: 5,
     title: "Liked Tweets",
     redirectUrl: "/liked",
     icon: <MessageCircleHeart />,

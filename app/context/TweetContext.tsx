@@ -18,5 +18,6 @@ export interface TweetContextType {
     tweetId: string;
     content: string;
 }, unknown>
+deleteMutation: UseMutationResult<any, Error, string, unknown>
 }
 export const TweetContext = createContext<TweetContextType | null>(null);

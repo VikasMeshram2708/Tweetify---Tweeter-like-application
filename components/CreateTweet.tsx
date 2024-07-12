@@ -11,6 +11,7 @@ export default function CreateTweet() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createTweet.mutate(content);
+    setContent('');
   };
 
   return (

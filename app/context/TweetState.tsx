@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { TweetSchema } from "@/models/TweetSchema";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import toast from "react-hot-toast";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ function TweetStateInner({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tweets"] });
+      toast.success("tweeted");
     },
     onError: (error) => {
       alert(error.message);
@@ -90,8 +92,6 @@ function TweetStateInner({ children }: { children: ReactNode }) {
   });
 
   // Update Tweet Mutation
-
-  // Confirm Edit Mutation
   const confirmMutation = useMutation({
     mutationFn: async ({
       tweetId,
@@ -117,9 +117,36 @@ function TweetStateInner({ children }: { children: ReactNode }) {
     },
   });
 
+  // Delete Tweet Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (tweetId: string) => {
+      const res = await fetch("/api/deletetweet", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tweetId: tweetId,
+        }),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      [queryClient.invalidateQueries({ queryKey: ["tweets"] })];
+      toast.success("tweet deleted");
+    },
+  });
+
   return (
     <TweetContext.Provider
-      value={{ tweets, isLoading, likeMutation, createTweet, confirmMutation }}
+      value={{
+        tweets,
+        isLoading,
+        likeMutation,
+        createTweet,
+        confirmMutation,
+        deleteMutation,
+      }}
     >
       {children}
     </TweetContext.Provider>
