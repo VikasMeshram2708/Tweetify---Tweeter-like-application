@@ -6,7 +6,9 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Heart } from "lucide-react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { Heart, Trash2 } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface Params {
   tweetId: string;
@@ -25,6 +27,8 @@ export default function RecentTweets({
   createdAt,
 }: Params) {
   const { likeMutation } = useTweets();
+  const { user } = useUser();
+
   return (
     <Card className="border-none bg-slate-600 text-slate-100">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -41,27 +45,26 @@ export default function RecentTweets({
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-slate-200">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus, cum.
-        </p>
+        <p className="text-slate-200">{authorContent}</p>
       </CardContent>
       <CardFooter className="flex justify-between">
         <p className="text-sm sm:text-lg text-slate-300">
           {new Date().toLocaleDateString()}
         </p>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+          {user?.email === authorEmail && <Trash2 className="cursor-pointer hover:text-red-500" />}
           {liked ? (
             <Heart
               onClick={() => likeMutation.mutate({ tweetId, isLiked: false })}
               size={24}
               fill="red"
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-red-500"
             />
           ) : (
             <Heart
               onClick={() => likeMutation.mutate({ tweetId, isLiked: true })}
               size={24}
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-red-500"
             />
           )}
         </div>

@@ -4,9 +4,11 @@ import {
   BookUser,
   Home,
   LogInIcon,
+  LogOut,
   MessageCircleHeart,
   Store,
   Twitter,
+  User,
   X,
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -19,6 +21,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface iLinks {
   id: number;
@@ -33,6 +37,12 @@ const links: iLinks[] = [
     title: "Home",
     redirectUrl: "/",
     icon: <Home />,
+  },
+  {
+    id: 2,
+    icon: <User />,
+    redirectUrl: "mytweets",
+    title: "My Tweets",
   },
   {
     id: 2,
@@ -56,12 +66,12 @@ const links: iLinks[] = [
 
 export default function Sidebar() {
   const isDesktop = useMediaQuery("(min-width:820px)");
-  console.log(isDesktop);
-  const [toggleSideBar, setToggleSideBar] = useState(false);
+
+  const { user } = useUser();
 
   return (
     <nav
-      className={`min-h-screen bg-slate-800 text-slate-100 ${
+      className={`sticky top-0 h-[100vh] bg-slate-800 text-slate-100 ${
         isDesktop ? "p-4" : "p-2"
       } flex flex-col ${isDesktop ? "w-96" : "w-14"}`}
     >
@@ -97,12 +107,30 @@ export default function Sidebar() {
         ))}
       </ul>
       {isDesktop ? (
-        <Button variant={"secondary"}>Login / Sign up</Button>
+        user ? (
+          <div className="bg-red-500">
+            <Link
+              href="/api/auth/logout"
+              className="flex items-center gap-3 px-4 py-2 rounded-lg"
+            >
+              <LogOut />
+              <Avatar>
+                <AvatarImage src={user.picture!} alt="user" />
+                <AvatarFallback>{user.name}</AvatarFallback>
+              </Avatar>
+              <p className="text-lg">{user.name}</p>
+            </Link>
+          </div>
+        ) : (
+          <Button variant="secondary">
+            <Link href="/api/auth/login">Login / Sign up</Link>
+          </Button>
+        )
       ) : (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              {/* Login Icon */}
+              {/** Login Icon **/}
               <LogInIcon />
             </TooltipTrigger>
             <TooltipContent>
